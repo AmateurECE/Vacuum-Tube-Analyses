@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+	<!-- Template: desktop standard -->
+	<!-- Meta -->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="author" content="electronics+radio">
+
+	<TITLE>Triode Valve / Tube | Formula &amp; Theory | Electronics Notes</TITLE><META NAME="keywords" CONTENT="triode,vacuum,tube,thermionic,valve, "><META NAME="description" CONTENT="Details of the formulas, graphs, and theory behind the triode valve or vacuum tube: amplification factor; anode / plate resistance; transconductance">
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" type="text/css" href="/parts/css/style.css"/>	
+	<link rel="stylesheet" type="text/css" href="/parts/css/font-awesome.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/parts/css/prettyPhoto.min.css"/>	
+	<link rel="stylesheet" type="text/css" href="/parts/css/colors/default.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/parts/css/responsive.css"/>
+
+	<!-- Favicon -->
+	<link type="image/x-icon" href="https://www.electronics-notes.com/favicon.ico" rel="shortcut icon">
+	
+	<script async='async' src='https://www.googletagservices.com/tag/js/gpt.js'></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+
+<script>
+  googletag.cmd.push(function() {
+    googletag.defineSlot('/1898494/E-R_RoS_Skyscraper-160x600', [160, 600], 'div-gpt-ad-1500559719902-0').addService(googletag.pubads());
+    googletag.defineSlot('/1898494/E-R_RoS_Top-Leaderboard-728x90', [728, 90], 'div-gpt-ad-1500559719902-1').addService(googletag.pubads());
+    googletag.defineSlot('/1898494/E-R_RoS_Top-MPU-300x250', [300, 250], 'div-gpt-ad-1500559719902-2').addService(googletag.pubads());
+    googletag.defineSlot('/1898494/E-R_RoS-Bottom-Leaderboard-728x90', [728, 90], 'div-gpt-ad-1500559719902-3').addService(googletag.pubads());
+    googletag.defineSlot('/1898494/EN-Bottom-MPU-300x250', [300, 250], 'div-gpt-ad-1500559719902-4').addService(googletag.pubads());
+    googletag.pubads().enableSingleRequest();
+    googletag.enableServices();
+  });
+</script>
+
+
+
+	
+	<!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
+<script type="text/javascript">
+    window.cookieconsent_options = {"message":"This website uses cookies to ensure you get the best experience on our website","dismiss":"Got it!","learnMore":"More info","link":"https://www.electronics-notes.com/about-us/privacy-policy.php","theme":"dark-top"};
+</script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.9/cookieconsent.min.js"></script>
+<!-- End Cookie Consent plugin -->
+
+</head>
+
+<body class="layout-narrow">
+
+	<!-- Page / Start -->	
+	<div id="page" class="hfeed site clearfix">
+	
+	
+		<!-- SKY ad / Start -->
+	
+		<div class="sky-ad">
+			<!-- /1898494/E-R_RoS_Skyscraper-160x600 -->
+<div id='div-gpt-ad-1500559719902-0' style='height:600px; width:160px;'>
+<script>
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1500559719902-0'); });
+</script>
+</div>
+		</div>
+	
+		 <!-- SKY ad / End -->
+
+	
+		<!-- Masthead / Start -->
+		<header id="masthead" class="site-header container clearfix">
+
+			
+			<div id="logo">
+				<a href="/"><img src="/parts/images/logo.png" alt="Electronics Notes" /></a>
+			</div>
+
+			<div class="header-ad">
+				<!-- /1898494/E-R_RoS_Top-Leaderboard-728x90 -->
+<div id='div-gpt-ad-1500559719902-1' style='height:90px; width:728px;'>
+<script>
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1500559719902-1'); });
+</script>
+</div>			</div>
+
+			<div class="clearfix"></div>
+
+			<!-- Secondary Bar / Start -->
+			<div id="secondary-bar" class="clearfix">
+
+				<a id="secondary-mobile-menu" href="#"><i class="fa fa-bars"></i> <span>Menu</span></a>
+
+				<!-- Secondary Navigation / Start -->
+				<nav id="secondary-nav">
+					<ul id="secondary-menu" class="sf-menu">
+						<li class="current_item"><a href="/">Home</a></li>
+						
+						<li>
+							<a href="#">Electronics</a>
+							<ul>
+								<li><a href="/articles/basic_concepts/">Basic concepts</a></li>	
+								<li><a href="/articles/analogue_circuits/">Circuits - Analogue</a></li>
+								<li><a href="/articles/electronic_components/">Electronic Components</a></li>
+								<li><a href="/articles/digital-embedded-processing/">Digital Logic & Embedded Processing</a></li>
+								<li><a href="/articles/constructional_techniques/">Constructional Techniques</a></li>
+								<li><a href="/articles/audio-video/">Audio and Video</a></li>			
+							</ul>
+						</li>
+						
+						<li>
+							<a href="#">Radio</a>
+							<ul>
+								<li><a href="/articles/antennas-propagation/">Antennas &amp; Propagation</a></li>
+								<li><a href="/articles/ham_radio/">Ham Radio</a></li>
+								<li><a href="/articles/radio/">Radio Technology</a></li>
+								<li><a href="/articles/connectivity/">Wired &amp; wireless connectivity</a></li>
+							</ul>
+						</li>
+						<li>  <a href="/articles/history/">History</a></li>
+						<li><a href="/articles/test-methods/">Testing &amp; Test Equipment</a></li>
+						<li>
+							<a href="#">Resources</a>
+							<ul>
+								<li><a href="/articles/becoming-an-engineer/">Becoming an Engineer</a></li>
+								<li><a href="/bookstore/">Books</a></li>
+								<li><a href="/events-exhibitions-trade-shows/">Events</a></li>
+							</ul>
+						</li>
+				
+
+
+
+
+
+
+
+
+
+<!--<li><a href="/about-us/privacy-policy.php">Privacy Policy</a></li>-->
+
+
+
+
+					</ul>
+				</nav>
+				<!-- Secondary Navigation / End -->
+
+				<div class="header-search">
+
+                    <i class="fa fa-search" style="color:#009999;font-size:1.5em;"></i>
+                    <i class="fa fa-times" style="color:#009999;font-size:1.5em;"></i>
+
+	                <div class="search-form">
+
+<!-- SiteSearch Google -->
+<form action="https://www.google.co.uk/cse" id="cse-search-box">
+  <div>
+    <input type="hidden" name="cx" value="partner-pub-2603569892487793:6914770473" />
+    <input type="hidden" name="ie" value="UTF-8" />
+    <input type="text" name="q" size="40" />
+    <input type="submit" name="sa" value="Search" />
+  </div>
+</form>
+
+<script type="text/javascript" src="https://www.google.co.uk/coop/cse/brand?form=cse-search-box&amp;lang=en"></script>
+
+<!-- SiteSearch Google -->
+
+
+
+					</div><!-- .search-form -->		  
+
+				</div><!-- .header-search -->		
+
+			</div>	
+			<!-- Secondary Bar / End -->
+
+		</header>
+		<!-- Masthead / End -->
+
+		<!-- Site Main / Start -->
+		<main id="main" class="site-main container" style="display:block">
+
+			<div id="primary" class="content-area column">
+
+<!-- Article / Start -->
+<article class="post entry-content">
+
+<header>  <h1>Triode Valve / Tube Formulas &amp; Theory</h1>  <h3>The amplification factor, anode or plate resistance; and the transconductance are some of the key factors associated with the triode valve / tube theory and formulas. </h3></header><!-- Start Top Links -->				
+<!-- Top Links start -->
+
+<hr>
+<p><b>Vacuum Tube / Thermionic Valves Includes:</b><br>
+  <a href="what-is-a-tube-basics-tutorial.php">Basics</a> &nbsp; &nbsp;
+  <a href="how-does-a-vacuum-tube-work-theory.php">How does a tube work</a> &nbsp; &nbsp;
+  <a href="electrodes-cathode-grid-anode.php">Vacuum tube electrodes</a> &nbsp; &nbsp;
+  <a href="diode-valve-vacuum-tube.php">Diode valve / tube</a> &nbsp; &nbsp;
+  <a href="triode-valve-vacuum-tube.php">Triode</a> &nbsp; &nbsp;
+  <a href="tetrode-valve-vacuum-tube.php">Tetrode</a> &nbsp; &nbsp;
+  <a href="beam-tetrode-valve-vacuum-tube.php">Beam Tetrode</a> &nbsp; &nbsp;
+  <a href="pentode-valve-vacuum-tube.php">Pentode</a> &nbsp; &nbsp;
+  <a href="equivalents.php">Equivalents</a> &nbsp; &nbsp;
+  <a href="pin-connections.php">Pin connections</a> &nbsp; &nbsp;
+  <a href="numbering-systems.php">Numbering systems</a> &nbsp; &nbsp;
+  <a href="sockets-bases.php">Valve sockets / bases</a> &nbsp; &nbsp;
+<hr>
+
+<!-- Top Links End -->
+<!-- Stop Top Links  --><p>When designing, repairing, or servicing triode valve / triode vacuum tube circuits it is very useful to have an understanding of the theory and what the different performance specifications mean.</p><p>The voltage and current relations in the triode for both anode and grid are of importance along with figures like triode amplification factor, the anode or plate resistance and the transconductance.</p><p>All of these give an understanding of the performance of a particular triode vale or triode vacuum tube.</p><h2>Triode voltage &amp; current relations</h2><p>The number of electrons that reach the anode of a triode valve or vacuum tube under space charge limited conditions is primarily governed by the electrostatic field in the cathode grid region.</p><p>Once the electrons have passed through the grid they travel on towards the anode very rapidly and space charge effects can normally be ignored, especially to a first approximation which is normally good enough for most calculations.</p><p>The critical area of the triode valve is within the cathode grid space. It is here that the theory needs to be examined to determine its operation.</p><p>In the cathode – grid area the electrostatic field is determined by both the grid and anode or plate.</p><P>Electrostatic shielding theory shows that the electrostatic field in the vicinity of the cathode of a triode is proportional to (E<sub>c</sub> + E<sub>b</sub>/&micro;), where E<sub>c</sub> and E<sub>b</sub> are the grid and anode voltages respectively. The voltages are measured with respect to the cathode. &micro; is the amplification factor of the valve.</p><h2>Triode amplification factor &micro;</h2><p>The value &micro; is the constant known as the amplification factor of the valve or vacuum tube – it applies to triodes and is not really applicable to tetrodes or pentodes. It is independent of the voltages  on the grid and anode and is determined by the geometries of the elements within the valve. Typically of the grid is placed close to the cathode this will give it a high amplification factor. For most triodes the amplification factor falls within the region of 10 to 100.</p><p>The amplification factor &micro; of a triode valve / vacuum tube is a measure of the relative effectiveness of the grid and anode voltages in producing the electrostatic fields at the surface of the cathode.</p><p>In more practical terms the amplification factor, &micro; of a triode can be considered to be the theoretical maximum gain that can be obtained. The amplification factor is based on the variation of anode voltage to grid voltage, but it is measured with the anode current held constant.</p><div class="notice notice-yellow"><div style="text-align: center;"><math xmlns="http://www.w3.org/1998/Math/MathML">  <mrow class="MJX-TeXAtom-ORD">    <mo>&#xB5;</mo>  </mrow>  <mo>=</mo>  <mrow class="MJX-TeXAtom-ORD">    <mo>&#x394;</mo>  </mrow>  <mi>V</mi>  <mi>a</mi>  <mrow class="MJX-TeXAtom-ORD">    <mo>/</mo>  </mrow>  <mrow class="MJX-TeXAtom-ORD">    <mo>&#x394;</mo>  </mrow>  <mi>V</mi>  <mi>g</mi></math></div></div><p><b>Where:</b><br>&nbsp; &nbsp; &micro; = amplification factor<br>&nbsp; &nbsp; &Delta;Va = change in anode voltage<br>&nbsp; &nbsp; &Delta;Vg = change in grid voltage</p><p.The amplification factor, &micro; is a theoretical vale for the valve or vacuum tube itself. When used within a circuit, the triode can only achieve its theoretical gain is if the anode or plate load resistance is infinite.</p><h2>Triode characteristic curves</h2><p>The performance and characteristics of triode valves or vacuum tubes are often represented by a number of graphs detailing their performance.</p><p>The characteristic curves or graphs are normally plotted for the relationship of the grid voltage and anode or plate current, and for the relationship of the anode or plate voltage and the corresponding current.</p><figure class="figure-large">  <img src="/images/valves-tubes-triode-grid-anode-relationship.svg"  alt="Typical triode grid voltage and anode current characteristic">  <figcaption> Typical triode grid voltage and anode current characteristic (Eb = anode voltage)</figcaption></figure><p>The various curves of grid voltage against anode current all have approximately the same shape, differing mainly in the displacement from each other. This results from the fact that the anode current is determined by the equation (E<sub>c</sub> + E<sub>b</sub>/&micro;).</p><figure class="figure-large">  <img src="/images/valves-tubes-triode-anode-voltage-current-relationship.svg"  alt="Typical relationship between anode current and anode current for a triode valve / tube">  <figcaption> Typical relationship between anode current and anode current for a triode valve / tube (Ec= grid voltage)</figcaption></figure><p>In a similar way that the curves for the grid voltage and anode current are similar, so too are those for anode voltage and current, although it can be seen that the curves for positive grid voltage are rather different.</p><h2>Anode resistance</h2><p>The anode resistance or plate resistance is more exactly described as the dynamic anode or plate resistance. It represents the resistance that the anode circuit offers to a small change in voltage.</p><p>Therefore when a small increment in anode voltage &Delta;E<sub>b</sub> produces a small change in anode current &Delta;I<sub>b</sub> the anode resistance can be calculated as follows:</p><div class="notice notice-yellow"><div style="text-align: center;"><math xmlns="http://www.w3.org/1998/Math/MathML">  <mi>rp</mi><mo>=</mo>  <mi>&Delta;</mi>  <mi>E</mi>  <mi>b</mi>  <mrow class="MJX-TeXAtom-ORD">    <mo>/</mo>  </mrow>  <mi>&Delta;</mi>  <mi>I</mi>  <mi>b</mi>  <mo>=</mo>  <mi>&delta;</mi>  <mi>E</mi>  <mi>b</mi>  <mrow class="MJX-TeXAtom-ORD">    <mo>/</mo>  </mrow>  <mi>&delta;</mi>  <mi>I</mi>  <mi>b</mi></math></div></div><p><b>Where:</b><br>&nbsp; &nbsp; rp = dynamic anode resistance</p><h2>Triode mutual conductance or transconductance</h2><p>The transconductance or mutual conductance g<sub>m</sub> of a triode is defined as the rate of change of anode current with respect to the grid voltage.</p><p>It is possible to express this as a simple equation:</p><div class="notice notice-yellow"><div style="text-align: center;"><math xmlns="http://www.w3.org/1998/Math/MathML">  <mi>&Delta;</mi>  <mi>I</mi>  <mi>b</mi>  <mo>=</mo>  <mi>&Delta;</mi>  <mi>Ec</mi>  <mi>&sdot;</mi>  <mi>gm</mi></math></div></div><div class="notice notice-yellow"><div style="text-align: center;"><math xmlns="http://www.w3.org/1998/Math/MathML">  <mi>gm</mi><mo>=</mo>  <mi>&delta;</mi>  <mi>I</mi>  <mi>b</mi>  <mrow class="MJX-TeXAtom-ORD">    <mo>/</mo>  </mrow>  <mi>&delta;</mi>  <mi>E</mi>  <mi>c</mi>  <mo>=</mo>  <mi>&micro;</mi>  <mrow class="MJX-TeXAtom-ORD">    <mo>/</mo>  </mrow>  <mi>rp</mi></math></div></div><p><b>Where:</b><br>&nbsp; &nbsp; &micro; = mutual conductance / transconductance<br>&nbsp; &nbsp; rp; = anode resistance<br><p>The transconductance or mutual conductance is a form of conductance, i.e. the inverse of Ohms. As a result the units in which they were quoted where mhos (Ohm spelt backwards). Nowadays the unit of conductance is the Siemens (S), but for valves / tubes the unit mho is still used.</p><p>For valves the figures were normally quoted in &micro;mhos, so be aware as this would make gain figures enormous if the &micro; was missed.</p><p>In very much later calculations associated with valves, gain figures started to be given in terms of mA/ V, where the voltage (V) was applied to the grid, and the current (mA) was the change of plate current for a 1V change of grid current.</p><nav class="pagination">	<a class="page-numbers next" href="triode-valve-vacuum-tube.php"> RETURN<br>to Triode basics </a>                  </nav><!-- AddThis Buttons --><script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4df2243e2ef8ffab" async="async"></script><div class="addthis_native_toolbox"></div><!-- End AddThis buttons --><br><!-- Start Bottom Links -->				<hr>
+<p><span class="style14"><b>More Electronic Components:</b></span><br>
+  <a href="/articles/electronic_components/resistors/resistor-types.php">Resistors</a> &nbsp; &nbsp;
+  <a href="/articles/electronic_components/capacitors/capacitor-uses.php">Capacitors</a> &nbsp; &nbsp;
+  <a href="/articles/electronic_components/quartz-crystal-xtal/resonator-basics-tutorial.php">Quartz crystals, xtals</a> &nbsp; &nbsp;
+  <a href="/articles/electronic_components/diode/diode-types.php">Diodes</a> &nbsp; &nbsp;
+  <a href="/articles/electronic_components/transistor/how-does-a-transistors-works-basics-tutorial.php">Transistor</a> &nbsp; &nbsp;
+  <a href="/articles/electronic_components/fet-field-effect-transistor/what-is-a-fet-types-overview.php">FET</a> &nbsp; &nbsp;
+  <a href="/articles/electronic_components/semiconductor-ic-memory/memory-types-technologies.php">Memory types &amp; technologies</a> &nbsp; &nbsp;
+  <a href="/articles/electronic_components/scr/what-is-a-thyristor.php">Thyristor / SCR</a> &nbsp; &nbsp;
+  <a href="/articles/electronic_components/connectors/connector-types.php">Connectors</a> &nbsp; &nbsp;
+  <a href="/articles/electronic_components/valves-tubes/what-is-a-tube-basics-tutorial.php">Valves / Tubes</a> &nbsp; &nbsp;
+  <a href="/articles/electronic_components/battery-technology/primer-basics.php">Battery technology</a> &nbsp; &nbsp;
+<br><b><i>&nbsp; &nbsp; Return to <a href="https://www.electronics-notes.com/articles/electronic_components/">Components menu . . .</a></b></i>
+<hr>
+<!-- Stop Bottom Links  -->
+
+<!-- Article / End -->
+</article>
+
+
+			    <div class="content-ad">
+			        <!-- /1898494/E-R_RoS-Bottom-Leaderboard-728x90 -->
+<div id='div-gpt-ad-1500559719902-3' style='height:90px; width:728px;'>
+<script>
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1500559719902-3'); });
+</script>
+</div>
+
+			    </div><!-- .content-ad --> 
+
+
+			</div>
+			<!-- Primary / End -->
+
+
+
+			<!-- Sidebar #2 / Start -->
+			<div id="secondary" class="widget-area widget-primary sidebar2 column" role="complementary">
+
+			    <div class="widget widget_ads">
+			        <h3 class="widget-title">Advertisement</h3>
+			        <br>
+			        <!-- /1898494/E-R_RoS_Top-MPU-300x250 -->
+<div id='div-gpt-ad-1500559719902-2' style='height:250px; width:300px;'>
+<script>
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1500559719902-2'); });
+</script>
+</div>			    </div><!-- .widget .widget_ads -->
+<br><br>
+
+			 <!-- .widget .widget_social / Start  --> 
+			    <div class="widget widget_social clearfix">
+			      <h3 class="widget-title"><strong>Follow</strong></h3>
+			        <ul>
+			              <li><a href="https://twitter.com/ElecNotes" title="Twitter" target="_blank" rel="nofollow"><i class="fa fa-twitter"></i></a></li>
+			
+			              <li><a href="https://plus.google.com/+Electronicsradioresources/" title="Google+" target="_blank" rel="nofollow"><i class="fa fa-google-plus"></i></a></li>
+			           
+			              <li><a href="https://www.youtube.com/ElectronicsNotes" title="YouTube" target="_blank" rel="nofollow"><i class="fa fa-youtube"></i></a></li>
+			            
+			              <li><a href="https://www.linkedin.com/company/electronics-radio/" title="LinkedIn" target="_blank" rel="nofollow"><i class="fa fa-linkedin"></i></a></li>      
+			            
+			        </ul>
+			    </div> <!-- .widget .widget_social End --> 
+<br>			    
+<div class="widget">		    
+  <a href="/about-us/advertise-with-us.php" rel="nofollow"><img src="/parts/images/advertise-with-us.png" width="300" height="100" alt="Advertise on Electronics Notes"></a>
+</div>
+<br>
+ <!-- Facts of the Day -->
+ <div class="widget">
+    <h3 class="widget-title fact-date"></h3>
+	<div class="fact-of-the-day"></div> 
+	<div class="fact-quote"></div>
+	<div class="fact-fact"></div>
+</div>
+<!-- End Facts of the Day -->
+
+
+
+
+<br>
+
+<!-- Events -->
+ <div class="widget">
+    <h3 class="widget-title"><strong>Events</strong></h3>
+	<div class="events-widget"></div> 
+	<b><a href="/events-exhibitions-trade-shows/">More events</a></b>
+</div>
+<!-- End Events -->			    
+<br>
+<!-- Articles -->
+ <div class="widget">
+    <h3 class="widget-title"><strong>Featured articles</strong></h3>
+	<div class="articles-widget"></div> 
+</div>
+<!-- End Articles -->	
+
+<br>
+
+<a href="/photographs-images/stock-images.php"><img src="/images/stock-image-ad-01.jpg" alt="stock images"></a><br>
+
+<br> <br>
+
+			<!-- Sidebar #2 / Start -->
+			<div id="secondary" class="widget-area widget-primary sidebar2 column" role="complementary">
+
+			    <div class="widget widget_ads">
+			        <h3 class="widget-title">Advertisement</h3>
+			        <br>
+			        <!-- /1898494/EN-Bottom-MPU-300x250 -->
+<div id='div-gpt-ad-1500559719902-4' style='height:250px; width:300px;'>
+<script>
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1500559719902-4'); });
+</script>
+</div>			    </div><!-- .widget .widget_ads -->
+
+<br><br><br>
+
+
+			</div>
+			<!-- Secondary / End -->
+
+			<div class="clearfix"></div>
+
+			<!-- Sidebar #2 / End -->		
+
+		</main>
+		<!-- Site Main / End -->
+		
+		<!-- Footer / Start -->	
+		<footer id="footer" class="container clearfix">
+						
+
+			<!-- Site Bottom / Start -->
+			<div id="site-bottom" class="clearfix">
+
+				<nav id="footer-nav">
+					<ul>
+						<li><a href="/about-us/about-electronics-notes.php" rel="nofollow">About Electronics Notes</a></li>												
+						<li><a href="/about-us/advertise-with-us.php" rel="nofollow">Advertise</a></li>	
+						<li><a href="/about-us/privacy-policy.php" rel="nofollow">Privacy Policy</a></li>
+						<li><a href="/photographs-images/stock-images.php">Images</a></li>
+					</ul>
+				</nav><!-- #footer-nav -->
+
+				<div class="copyright">
+					&copy; <a href="/">electronics-notes.com</a> 
+				</div>
+
+			</div>
+			<!-- Site Bottom / End -->
+
+		</footer>
+		<!-- Footer / End -->	
+
+	</div>
+	<!-- Page / End -->
+	
+	<!-- JavaScripts -->
+	<script type="text/javascript" src="/parts/js/jquery.min.js"></script>	
+	<script type="text/javascript" src="/parts/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/parts/js/jquery.matchHeight.min.js"></script>		
+	<script type="text/javascript" src="/parts/js/hoverIntent.min.js"></script>
+	<script type="text/javascript" src="/parts/js/superfish.min.js"></script>	
+	<script type="text/javascript" src="/parts/js/jquery.jcarousel.min.js"></script>
+	<script type="text/javascript" src="/parts/js/jquery.sidr.min.js"></script>
+<!--	<script type="text/javascript" src="/parts/js/retina.min.js"></script> -->
+	<script type="text/javascript" src="/parts/js/jquery.sticky.min.js"></script>
+	<script type="text/javascript" src="/parts/js/jquery.prettyPhoto.min.js"></script>
+	<script type="text/javascript" src="/parts/js/jquery.custom.min.js"></script>	
+<!--	<script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script> -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+	<script type="text/javascript" src="/parts/js/local.js?up"></script>
+	
+	<script type="text/javascript" charset="utf-8">
+	$(document).ready(function(){
+		$("a[rel^='prettyPhoto']").prettyPhoto();
+	});
+	</script>
+<!-- Google Tracking Code --> 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-675939-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- End Google Tracking Code -->
+</body>
+</html>
