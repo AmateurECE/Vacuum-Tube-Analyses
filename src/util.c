@@ -15,8 +15,20 @@
  ***/
 
 #include <stdlib.h>
+#include <gsl/gsl_matrix.h>
 
 #include "util.h"
+
+/*******************************************************************************
+ * MACRO DEFINITIONS
+ ***/
+
+#define DEFINE_FORMAT_STRUCT(n, form)			\
+  typedef struct {					\
+    short n; /* Number of values in the tuple */	\
+    char format[] = form; /* Format string */		\
+    double tuple[n]; /* Size for one tuple. */		\
+  } format##n##_t;
 
 /*******************************************************************************
  * API FUNCTIONS
@@ -31,12 +43,12 @@
  * ARGUMENTS:	    filename: (const char *) -- the name of the file to read.
  *		    n: (size_t) -- the size of the tuple to read.
  *
- * RETURN:	    double * -- pointer to an array of doubles created from
+ * RETURN:	    gsl_matrix * -- pointer to a matrix of doubles created from
  *		    reading the tuples in, or NULL if there was an error.
  *
  * NOTES:	    none.
  ***/
-double * read_tuples(const char * filename, size_t n)
+gsl_matrix * read_tuples(const char * filename, size_t n)
 {
   FILE * file;
   if ((file = fopen(filename, "r")) == NULL || n <= 0)
@@ -48,7 +60,9 @@ double * read_tuples(const char * filename, size_t n)
   }
   strcat(mould, ")");
 
-  double * tuples = calloc(10, sizeof(double));
+  DEFINE_FORMAT_STRUCT(n,)
+
+  gsl_matrix * matrix = gsl_matrix_alloc()
   while (!feof(file)) {
     
   }
