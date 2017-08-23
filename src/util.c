@@ -21,6 +21,10 @@
 #include "util.h"
 
 /*******************************************************************************
+ * STATIC FUNCTION PROTOTYPES
+ ***/
+
+/*******************************************************************************
  * API FUNCTIONS
  ***/
 
@@ -49,9 +53,19 @@ gsl_matrix * read_tuples_csv(const char * filename, size_t n)
 
   while (!feof(file)) {
     double * arr = calloc(n, sizeof(double));
-    for (int i = 0; i < n; i++) {
-      fscanf(file, "%lf,", &arr[i]);
+    char *line = NULL, *scratch;
+    size_t n = 0;
+    if (getline(&line, &n, file) == -1) goto error_exit;
+    line = strtok_r(line, ',', &scratch);
+
+    int i = 0;
+    while ((line = strtok_r(NULL, ',', &scratch)) != NULL
+	   && i < n) {
+      sscanf(line, "%lf", &arr[i]);
+      i++;
     }
+
+    free(line);
     if (list_insnxt(list, list_tail(list), arr) != 0) {
       free(arr);
       goto error_exit;
@@ -108,5 +122,9 @@ gsl_matrix * read_tuples_xml(const char * filename, size_t n) {
   /* TODO: Implement this. */
   return NULL;
 }
+
+/*******************************************************************************
+ * STATIC FUNCTIONS
+ ***/
 
 /******************************************************************************/
