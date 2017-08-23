@@ -17,25 +17,15 @@
 #include <stdlib.h>
 #include <gsl/gsl_matrix.h>
 
+#include "linkedlist.h"
 #include "util.h"
-
-/*******************************************************************************
- * MACRO DEFINITIONS
- ***/
-
-#define DEFINE_FORMAT_STRUCT(n, form)			\
-  typedef struct {					\
-    short n; /* Number of values in the tuple */	\
-    char format[] = form; /* Format string */		\
-    double tuple[n]; /* Size for one tuple. */		\
-  } format##n##_t;
 
 /*******************************************************************************
  * API FUNCTIONS
  ***/
 
 /*******************************************************************************
- * FUNCTION:	    read_tuples
+ * FUNCTION:	    read_tuples_csv
  *
  * DESCRIPTION:	    Reads tuples in the form (\d+,\d+,...) from the file with
  *		    the name <filename> of size <n>.
@@ -48,26 +38,75 @@
  *
  * NOTES:	    none.
  ***/
-gsl_matrix * read_tuples(const char * filename, size_t n)
+gsl_matrix * read_tuples_csv(const char * filename, size_t n)
 {
   FILE * file;
   if ((file = fopen(filename, "r")) == NULL || n <= 0)
     return NULL;
 
-  char * mould = "(%f";
-  for (int i = 1; i < n; i++) {
-    strcat(mould, ",%f");
-  }
-  strcat(mould, ")");
+  List * list = malloc(sizeof(List));
+  list_init(list, free);
 
-  DEFINE_FORMAT_STRUCT(n,)
-
-  gsl_matrix * matrix = gsl_matrix_alloc()
   while (!feof(file)) {
-    
+    double * arr = calloc(n, sizeof(double));
+    for (int i = 0; i < n; i++) {
+      fscanf(file, "%lf,", &arr[i]);
+    }
+    if (list_insnxt(list, list_tail(list), arr) != 0) {
+      free(arr);
+      goto error_exit;
+    }
+  }
+  fclose(file);
+
+  gsl_matrix * matrix = gsl_matrix_alloc(list_size(list), n);
+  int i = 0;
+  while (list_size(list) > 0) {
+    double * vector;
+    list_remnxt(list, NULL, (void **)&vector);
+    for (int j = 0; j < n; j++) {
+      gsl_matrix_set(matrix, i, j, vector[j]);
+    }
+    i++;
   }
 
-  fclose(file);
+  list_dest(list);
+  free(list);
+
+  return matrix;
+
+ error_exit: {
+    fclose(file);
+    list_dest(list);
+    free(list);
+    return NULL;
+  }
+}
+
+/*******************************************************************************
+ * FUNCTION:	    read_tuples_xml
+ *
+ * DESCRIPTION:	    Read tuples from an XML file in the format:
+ *
+ *			<tuple>
+ *			    <dim val=[value]/>
+ *			    ...
+ *			</tuple>
+ *			...
+ *
+ *		    This function is mostly for my ease of use. XML is a lot
+ *		    easier to read than CSV.
+ *
+ * ARGUMENTS:	    filename: (const char *) -- the path of the XML file.
+ *		    n: (size_t) -- the size of the tuple to read.
+ *
+ * RETURN:	    gsl_matrix or NULL if unsuccessful.
+ *
+ * NOTES:	    none.
+ ***/
+gsl_matrix * read_tuples_xml(const char * filename, size_t n) {
+  /* TODO: Implement this. */
+  return NULL;
 }
 
 /******************************************************************************/

@@ -1,9 +1,10 @@
 /*******************************************************************************
- * NAME:	    main.c
+ * NAME:	    fit.h
  *
  * AUTHOR:	    Ethan D. Twardy
  *
- * DESCRIPTION:	    Main test file for the program.
+ * DESCRIPTION:	    This file contains the public interface for the functions
+ *		    in fit.c
  *
  * CREATED:	    08/22/2017
  *
@@ -14,28 +15,8 @@
  * INCLUDES
  ***/
 
-#include <stdio.h>
-#include <gsl/gsl_matrix.h>
-
-#include "util.h"
-
 /*******************************************************************************
- * MAIN
+ * API FUNCTION PROTOTYPES
  ***/
-
-int main(int argc, char * argv[]) {
-  gsl_matrix * matrix;
-
-  matrix = read_tuples_csv("test.dat", 3);
-
-  for (int i = 0; i < matrix->size1; i++) {
-    printf("[");
-    for (int j = 0; j < matrix->size2; j++) {
-      printf(" %f ", gsl_matrix_get(matrix, i, j));
-    }
-    printf("]\n");
-  }
-
-}
 
 /******************************************************************************/
