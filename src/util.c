@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <gsl/gsl_matrix.h>
+#include <string.h>
 
 #include "linkedlist.h"
 #include "util.h"
@@ -56,14 +57,13 @@ gsl_matrix * read_tuples_csv(const char * filename, size_t n)
     char *line = NULL, *scratch;
     size_t n = 0;
     if (getline(&line, &n, file) == -1) goto error_exit;
-    line = strtok_r(line, ',', &scratch);
+    line = strtok_r(line, ",", &scratch);
 
     int i = 0;
-    while ((line = strtok_r(NULL, ',', &scratch)) != NULL
-	   && i < n) {
+    do {
       sscanf(line, "%lf", &arr[i]);
       i++;
-    }
+    } while ((line = strtok_r(NULL, ",", &scratch)) != NULL && i < n);
 
     free(line);
     if (list_insnxt(list, list_tail(list), arr) != 0) {
