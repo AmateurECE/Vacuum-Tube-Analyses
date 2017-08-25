@@ -13,7 +13,7 @@
 CC = gcc
 CFLAGS = -g -Wall -O0 `pkg-config --cflags gsl`
 LDLIBS = `pkg-config --libs gsl`
-OBJS = main.c util.c linkedlist.c
+OBJS = main.c util.c linkedlist.c fit.c
 
 main: $(OBJS)
 

@@ -15,6 +15,9 @@
  * INCLUDES
  ***/
 
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_multifit_nlin.h>
+
 #include "fit.h"
 
 /*******************************************************************************
@@ -39,6 +42,7 @@
  ***/
 int surface_f(const gsl_vector * x, void * data, gsl_vector * f)
 {
+  
   return GSL_SUCCESS;
 }
 

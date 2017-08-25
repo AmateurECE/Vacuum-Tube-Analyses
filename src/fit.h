@@ -22,6 +22,13 @@
  * TYPE DEFINITIONS
  ***/
 
+struct data {
+  
+  size_t n;
+  double * y;
+  
+};
+
 typedef struct fit_data {
   gsl_vector * coefficient_vector;
 } fit_data_t;
