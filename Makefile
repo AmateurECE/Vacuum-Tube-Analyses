@@ -25,12 +25,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###
 
-CC:=gcc
-CFLAGS:= -g -Wall -O0 -I include/
-LDLIBS:=
-OBJS=$(shell find src -type f)
+TOP:=$(shell pwd)
+OBJS:= main.c \
+	linkedlist.c \
+	fit.c \
+	util.c
 
-main: $(OBJS)
-	$(CC) -c $(CFLAGS) $(OBJS) $(LDLIBS)
+OBJS:=$(addprefix src/,$(OBJS))
+OBJS:=$(patsubst %.c,%.o,$(OBJS))
+
+CC=gcc
+CFLAGS= -g \
+	-Wall \
+	-O0 \
+	-I $(TOP)/include/ \
+	-D HAVE_INLINE
+
+.DELETE_ON_ERROR:
+.PHONY: clean
+
+src/main: $(OBJS)
+
+clean:
+	@rm -rf `find $(TOP) -name *.o`
 
 ################################################################################

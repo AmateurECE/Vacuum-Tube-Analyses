@@ -30,8 +30,9 @@
  ***/
 
 #include <stdio.h>
-#include <gsl/gsl_matrix.h>
+#include "gsl/gsl_matrix.h"
 
+#include "config.h"
 #include "util.h"
 
 /*******************************************************************************
