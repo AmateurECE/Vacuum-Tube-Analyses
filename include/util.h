@@ -1,11 +1,12 @@
 /*******************************************************************************
- * NAME:	    main.c
+ * NAME:	    util.h
  *
  * AUTHOR:	    Ethan D. Twardy
  *
- * DESCRIPTION:	    Main test file for the program.
+ * DESCRIPTION:	    Header file containing the public interface for the
+ *		    functions in util.c
  *
- * CREATED:	    08/22/2017
+ * CREATED:	    08/21/2017
  *
  * LAST EDITED:	    08/25/2017
  *
@@ -25,38 +26,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***/
 
+#ifndef __ET_UTIL_H__
+#define __ET_UTIL_H__
+
 /*******************************************************************************
  * INCLUDES
  ***/
 
-#include <stdio.h>
 #include <gsl/gsl_matrix.h>
 
-#include "util.h"
+#include <stdlib.h>
 
 /*******************************************************************************
- * MAIN
+ * API FUNCTION PROTOTYPES
  ***/
 
-extern char etext, edata, end;
+/**
+ * \brief Read tuples of size \c n from a CSV file
+ * \param filename The path of the file to open
+ * \param n The size of the tuples to read
+ * \return \c gsl_matrix with tuples or \c NULL on failure.
+ */
+extern gsl_matrix * read_tuples_csv(const char * filename, size_t n);
 
-int main(int argc, char * argv[]) {
-  gsl_matrix * matrix;
+/**
+ * \brief Read tuples of size \c n from an XML file
+ * \param filename The path of the file to open
+ * \param n The size of the tuples to read
+ * \return \c gsl_matrix or \c NULL on failure.
+ */
+extern gsl_matrix * read_tuples_xml(const char * filename, size_t n);
 
-  matrix = read_tuples_csv(argv[1], strtol(argv[2], NULL, 10));
-  
-  printf("Program text segment: %p\n", &etext);
-  printf("Program data segment: %p\n", &edata);
-  printf("Program bss segment:  %p\n", &end);
-
-  for (int i = 0; i < matrix->size1; i++) {
-    printf("[");
-    for (int j = 0; j < matrix->size2; j++) {
-      printf(" %f ", gsl_matrix_get(matrix, i, j));
-    }
-    printf("]\n");
-  }
-
-}
+#endif /* __ET_UTIL_H__ */
 
 /******************************************************************************/

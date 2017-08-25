@@ -1,9 +1,10 @@
 /*******************************************************************************
- * NAME:	    main.c
+ * NAME:	    fit.h
  *
  * AUTHOR:	    Ethan D. Twardy
  *
- * DESCRIPTION:	    Main test file for the program.
+ * DESCRIPTION:	    This file contains the public interface for the functions
+ *		    in fit.c
  *
  * CREATED:	    08/22/2017
  *
@@ -29,34 +30,30 @@
  * INCLUDES
  ***/
 
-#include <stdio.h>
+#include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 
-#include "util.h"
-
 /*******************************************************************************
- * MAIN
+ * TYPE DEFINITIONS
  ***/
 
-extern char etext, edata, end;
-
-int main(int argc, char * argv[]) {
-  gsl_matrix * matrix;
-
-  matrix = read_tuples_csv(argv[1], strtol(argv[2], NULL, 10));
+struct data {
   
-  printf("Program text segment: %p\n", &etext);
-  printf("Program data segment: %p\n", &edata);
-  printf("Program bss segment:  %p\n", &end);
+  size_t n;
+  double * y;
+  
+};
 
-  for (int i = 0; i < matrix->size1; i++) {
-    printf("[");
-    for (int j = 0; j < matrix->size2; j++) {
-      printf(" %f ", gsl_matrix_get(matrix, i, j));
-    }
-    printf("]\n");
-  }
+typedef struct fit_data {
+  gsl_vector * coefficient_vector;
+} fit_data_t;
 
-}
+/*******************************************************************************
+ * API FUNCTION PROTOTYPES
+ ***/
+
+extern int surface_f(const gsl_vector * x, void * data, gsl_vector * f);
+extern int surface_df(const gsl_vector * x, void * data, gsl_matrix * J);
+extern fit_data_t * fit_surface(gsl_matrix * data);
 
 /******************************************************************************/
