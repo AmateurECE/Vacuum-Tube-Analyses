@@ -25,6 +25,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###
 
+SHELL=/bin/bash
 TOP:=$(shell pwd)
 OBJS:= main.c \
 	linkedlist.c \
@@ -39,9 +40,12 @@ CFLAGS= -g \
 	-Wall \
 	-O0 \
 	-I $(TOP)/include/ \
-	`pkg-config --cflags gsl`
+	`pkg-config --cflags gsl` \
+	`if [ \`uname\` = Linux ]; then \
+		echo -I/home/etwardy/Documents/gsl-release-2-4/; fi`
 
-LDLIBS= `pkg-config --libs gsl`
+LDLIBS= `pkg-config --libs gsl` \
+	-L /home/etwardy/Documents/gsl-release-2-4/.libs/
 
 .DELETE_ON_ERROR:
 .PHONY: clean

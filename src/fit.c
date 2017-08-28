@@ -64,11 +64,11 @@
  ***/
 int surface_f(const gsl_vector * x, void * data, gsl_vector * f)
 {
-  gsl_matrix * values = (fit_data_t *)data->empirical_values;
+  gsl_matrix * values = ((fit_data_t *)data)->empirical_data;
   size_t n = values->size1;
-  double * Ig = gsl_matrix_column(values, 0);
-  double * Eg = gsl_matrix_column(values, 1);
-  double * Ep = gsl_matrix_column(values, 2);
+  gsl_vector_view Ig = gsl_matrix_column(values, 0);
+  gsl_vector_view Eg = gsl_matrix_column(values, 1);
+  gsl_vector_view Ep = gsl_matrix_column(values, 2);
 
   double b0 = gsl_vector_get(x, 0);
   double b1 = gsl_vector_get(x, 1);
@@ -77,12 +77,12 @@ int surface_f(const gsl_vector * x, void * data, gsl_vector * f)
   double b4 = gsl_vector_get(x, 4);
 
   for (size_t i = 0; i < n; i++) {
-    double yi = (b0 * gsl_vector_get(Eg,i))
-      + (b1 * gsl_vector_get(Ep,i))
-      + (b2 * pow(gsl_vector_get(Eg,i), 2.0))
-      + (b3 * pow(gsl_vector_get(Ep,i), 2.0))
+    double yi = (b0 * gsl_vector_get(&Eg.vector, i))
+      + (b1 * gsl_vector_get(&Ep.vector, i))
+      + (b2 * pow(gsl_vector_get(&Eg.vector, i), 2.0))
+      + (b3 * pow(gsl_vector_get(&Ep.vector, i), 2.0))
       + b4;
-    gsl_vector_set(f, i, gsl_vector_get(Ig,i) - yi);
+    gsl_vector_set(f, i, gsl_vector_get(&Ig.vector, i) - yi);
   }
   
   return GSL_SUCCESS;
@@ -108,10 +108,10 @@ int surface_f(const gsl_vector * x, void * data, gsl_vector * f)
  ***/
 int surface_df(const gsl_vector * x, void * data, gsl_matrix * J)
 {
-  gsl_matrix * values = (fit_data_t *)data->empirical_values;
+  gsl_matrix * values = ((fit_data_t *)data)->empirical_data;
   size_t n = values->size1;
-  double * Eg = gsl_matrix_column(values, 1);
-  double * Ep = gsl_matrix_column(values, 2);
+  gsl_vector_view Eg = gsl_matrix_column(values, 1);
+  gsl_vector_view Ep = gsl_matrix_column(values, 2);
 
   double b0 = gsl_vector_get(x, 0);
   double b1 = gsl_vector_get(x, 1);
@@ -119,8 +119,8 @@ int surface_df(const gsl_vector * x, void * data, gsl_matrix * J)
   double b3 = gsl_vector_get(x, 3);
 
   for (size_t i = 0; i < n; i++) {
-    double y1 = b0 + (2 * b2 * gsl_vector_get(Eg,i));
-    double y2 = b1 + (2 * b3 * gsl_vector_get(Ep,i));
+    double y1 = b0 + (2 * b2 * gsl_vector_get(&Eg.vector, i));
+    double y2 = b1 + (2 * b3 * gsl_vector_get(&Ep.vector, i));
     gsl_matrix_set(J, i, 0, y1);
     gsl_matrix_set(J, i, 1, y2);
   }
@@ -166,7 +166,7 @@ void callback(const size_t iter,
  *
  * NOTES:	    none.
  ***/
-fit_data_t * fit_surface(fit_data_t * data, bool callback)
+fit_data_t * fit_surface(fit_data_t * data, bool call)
 {
   /* Define constants for fitting */
   const double xtol = 1e-8; /* Step tolerance */
@@ -184,8 +184,8 @@ fit_data_t * fit_surface(fit_data_t * data, bool callback)
     .f = surface_f,
     .df = surface_df,
     .fvv = NULL,
-    .n = data->size1,
-    .p = data->size2,
+    .n = data->empirical_data->size1,
+    .p = data->empirical_data->size2,
     .params = data->empirical_data
   };
 
@@ -203,7 +203,7 @@ fit_data_t * fit_surface(fit_data_t * data, bool callback)
   status = gsl_multifit_nlinear_driver(20, xtol, gtol, ftol,
 				       callback, NULL, &info, w);
 
-  printf("status = %s\ncallback = %d\n", gsl_strerror(status), (int)callback);
+  printf("status = %s\ncallback = %d\n", gsl_strerror(status), (int)call);
   
   return NULL;
 }

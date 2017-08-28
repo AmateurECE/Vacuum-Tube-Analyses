@@ -49,7 +49,7 @@ int main(int argc, char * argv[]) {
 
   fit_data_t * dat = malloc(sizeof(fit_data_t));
   dat->empirical_data = matrix;
-  dat->initial_values = &init;
+  dat->initial_values = init;
 
   fit_surface(dat, true);
 }
