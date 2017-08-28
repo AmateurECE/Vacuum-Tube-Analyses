@@ -39,7 +39,9 @@ CFLAGS= -g \
 	-Wall \
 	-O0 \
 	-I $(TOP)/include/ \
-	-D HAVE_INLINE
+	`pkg-config --cflags gsl`
+
+LDLIBS= `pkg-config --libs gsl`
 
 .DELETE_ON_ERROR:
 .PHONY: clean

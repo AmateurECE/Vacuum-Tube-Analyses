@@ -37,15 +37,10 @@
  * TYPE DEFINITIONS
  ***/
 
-struct data {
-  
-  size_t n;
-  double * y;
-  
-};
-
 typedef struct fit_data {
-  gsl_vector * coefficient_vector;
+  gsl_vector * coefficients;
+  double * initial_values;
+  gsl_matrix * empirical_data;
 } fit_data_t;
 
 /*******************************************************************************
@@ -54,6 +49,6 @@ typedef struct fit_data {
 
 extern int surface_f(const gsl_vector * x, void * data, gsl_vector * f);
 extern int surface_df(const gsl_vector * x, void * data, gsl_matrix * J);
-extern fit_data_t * fit_surface(gsl_matrix * data);
+extern fit_data_t * fit_surface(fit_data_t * data, bool callback);
 
 /******************************************************************************/

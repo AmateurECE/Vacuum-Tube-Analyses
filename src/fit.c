@@ -30,8 +30,10 @@
  * INCLUDES
  ***/
 
+#include <stdbool.h>
 #include <gsl/gsl_vector.h>
-#include <gsl/gsl_multifit_nlin.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_multifit_nlinear.h>
 
 #include "fit.h"
 
@@ -47,16 +49,41 @@
  *		    corresponds to a point on the surface. The function is
  *		    defined as:
  *
- *			Y_i = B_0x + B_1x^2 + B_2y + B_3y^2 + B_4
+ *			f(x,y)_i = B_0x + B_1x^2 + B_2y + B_3y^2 + B_4
  *
- * ARGUMENTS:	    
+ * ARGUMENTS:	    x: (const gsl_vector *) -- vector of coefficients to test
+ *		    data: (void *) -- pointer to a struct containing empirical
+ *			data (void for type consistency with gsl).
+ *		    f: (gsl_vector *) -- pointer to a vector of size n, which
+ *			will contain the computed values for the vector x.
  *
- * RETURN:	    
+ * RETURN:	    GSL_SUCCESS -- There's virtually no way that the function
+ *			will fail, so returning a different value is pointless.
  *
- * NOTES:	    
+ * NOTES:	    none.
  ***/
 int surface_f(const gsl_vector * x, void * data, gsl_vector * f)
 {
+  gsl_matrix * values = (fit_data_t *)data->empirical_values;
+  size_t n = values->size1;
+  double * Ig = gsl_matrix_column(values, 0);
+  double * Eg = gsl_matrix_column(values, 1);
+  double * Ep = gsl_matrix_column(values, 2);
+
+  double b0 = gsl_vector_get(x, 0);
+  double b1 = gsl_vector_get(x, 1);
+  double b2 = gsl_vector_get(x, 2);
+  double b3 = gsl_vector_get(x, 3);
+  double b4 = gsl_vector_get(x, 4);
+
+  for (size_t i = 0; i < n; i++) {
+    double yi = (b0 * gsl_vector_get(Eg,i))
+      + (b1 * gsl_vector_get(Ep,i))
+      + (b2 * pow(gsl_vector_get(Eg,i), 2.0))
+      + (b3 * pow(gsl_vector_get(Ep,i), 2.0))
+      + b4;
+    gsl_vector_set(f, i, gsl_vector_get(Ig,i) - yi);
+  }
   
   return GSL_SUCCESS;
 }
@@ -64,21 +91,45 @@ int surface_f(const gsl_vector * x, void * data, gsl_vector * f)
 /*******************************************************************************
  * FUNCTION:	    surface_df
  *
- * DESCRIPTION:	    
+ * DESCRIPTION:	    Compute the value of the Jacobian matrix for coefficient
+ *		    vector 'x' and parameters 'data'.
  *
- * ARGUMENTS:	    
+ * ARGUMENTS:	    x: (const gsl_vector *) -- coefficient vector given by gsl.
+ *		    data: (void *) -- empirical data struct (void for type 
+ *			consistency with gsl).
+ *		    J: (gsl_matrix *) -- pointer to the allocated matrix with
+ *			which to fill the result of the Jacobian computation.
  *
- * RETURN:	    
+ * RETURN:	    GSL_SUCCESS -- unnecessary to implement an error catching
+ *		    feature since the jacobian entries are continuous at all
+ *		    points, no memory allocation, etc.
  *
  * NOTES:	    
  ***/
 int surface_df(const gsl_vector * x, void * data, gsl_matrix * J)
 {
+  gsl_matrix * values = (fit_data_t *)data->empirical_values;
+  size_t n = values->size1;
+  double * Eg = gsl_matrix_column(values, 1);
+  double * Ep = gsl_matrix_column(values, 2);
+
+  double b0 = gsl_vector_get(x, 0);
+  double b1 = gsl_vector_get(x, 1);
+  double b2 = gsl_vector_get(x, 2);
+  double b3 = gsl_vector_get(x, 3);
+
+  for (size_t i = 0; i < n; i++) {
+    double y1 = b0 + (2 * b2 * gsl_vector_get(Eg,i));
+    double y2 = b1 + (2 * b3 * gsl_vector_get(Ep,i));
+    gsl_matrix_set(J, i, 0, y1);
+    gsl_matrix_set(J, i, 1, y2);
+  }
+
   return GSL_SUCCESS;
 }
 
 /*******************************************************************************
- * FUNCTION:	    fit_surface
+ * FUNCTION:	    callback
  *
  * DESCRIPTION:	    
  *
@@ -88,8 +139,72 @@ int surface_df(const gsl_vector * x, void * data, gsl_matrix * J)
  *
  * NOTES:	    
  ***/
-fit_data_t * fit_surface(gsl_matrix * data)
+void callback(const size_t iter,
+	      void * params,
+	      const gsl_multifit_nlinear_workspace * w)
 {
+  gsl_vector * x = gsl_multifit_nlinear_position(w);
+  printf("iter %2zu: Y = %fEg + %fEp + %fEg^2 + %fEp^2 + %f\n",
+	 iter,
+	 gsl_vector_get(x, 0),
+	 gsl_vector_get(x, 1),
+	 gsl_vector_get(x, 2),
+	 gsl_vector_get(x, 3),
+	 gsl_vector_get(x, 4));
+}
+
+/*******************************************************************************
+ * FUNCTION:	    fit_surface
+ *
+ * DESCRIPTION:	    Uses the GSL to perform a multiple polynomial regression
+ *		    with the TRS method using 'data'.
+ *
+ * ARGUMENTS:	    data: (fit_data_t *) -- struct containing the data to fit.
+ *
+ * RETURN:	    (fit_data_t *) -- pointer to the same struct that is passed,
+ *		    sets the relevant fields.
+ *
+ * NOTES:	    none.
+ ***/
+fit_data_t * fit_surface(fit_data_t * data, bool callback)
+{
+  /* Define constants for fitting */
+  const double xtol = 1e-8; /* Step tolerance */
+  const double gtol = 1e-8; /* Gradient tolerance */
+  const double ftol = 0.0;   /* ??? */
+  gsl_vector_view view = gsl_vector_view_array(data->initial_values,
+					       data->empirical_data->size2);
+
+  /* Use the default parameters */
+  gsl_multifit_nlinear_parameters params =
+    gsl_multifit_nlinear_default_parameters();
+
+  /* Initialize fdf structure */
+  gsl_multifit_nlinear_fdf fdf = (gsl_multifit_nlinear_fdf){
+    .f = surface_f,
+    .df = surface_df,
+    .fvv = NULL,
+    .n = data->size1,
+    .p = data->size2,
+    .params = data->empirical_data
+  };
+
+  /* Allocate the solver */
+  gsl_multifit_nlinear_workspace * w =
+    gsl_multifit_nlinear_alloc(gsl_multifit_nlinear_trust,
+			       &params,
+			       data->empirical_data->size1,
+			       data->empirical_data->size2);
+
+  /* Initialize the solver */
+  gsl_multifit_nlinear_winit(&view.vector, NULL, &fdf, w);
+
+  int info, status;
+  status = gsl_multifit_nlinear_driver(20, xtol, gtol, ftol,
+				       callback, NULL, &info, w);
+
+  printf("status = %s\ncallback = %d\n", gsl_strerror(status), (int)callback);
+  
   return NULL;
 }
 
