@@ -45,14 +45,20 @@ CFLAGS= -g \
 		echo -I/home/etwardy/Documents/gsl-release-2-4/; fi`
 
 LDLIBS= `pkg-config --libs gsl` \
-	-L /home/etwardy/Documents/gsl-release-2-4/.libs/
+	`if [ -d /home/etwardy/ ]; then \
+		echo -L /home/etwardy/Documents/gsl-release-2-4/.libs/; fi`
 
 .DELETE_ON_ERROR:
-.PHONY: clean
+.PHONY: all
+
+all: force src/main
+	@if [ `uname` = Darwin ]; then dsymutil src/main; fi
+	@mv src/main $(TOP)/main
+	@rsync -a src/main.dSYM $(TOP)/
+	@rm -rf `find $(TOP) -name *.o` src/main.dSYM
 
 src/main: $(OBJS)
 
-clean:
-	@rm -rf `find $(TOP) -name *.o`
+force:
 
 ################################################################################

@@ -37,13 +37,20 @@
 #include "fit.h"
 
 /*******************************************************************************
+ * STATIC FUNCTION PROTOTYPES
+ ***/
+
+static void print_matrix(gsl_matrix * matrix);
+
+/*******************************************************************************
  * MAIN
  ***/
 
 int main(int argc, char * argv[]) {
   gsl_matrix * matrix;
 
-  matrix = read_tuples_csv(argv[1], strtol(argv[2], NULL, 10));
+  matrix = read_tuples_csv("data/12AX7-Data.csv", 3);
+  print_matrix(matrix);
 
   double init[5] = {5.0, 5.0, 5.0, 5.0, 5.0};
 
@@ -52,6 +59,32 @@ int main(int argc, char * argv[]) {
   dat->initial_values = init;
 
   fit_surface(dat, true);
+}
+
+/*******************************************************************************
+ * STATIC FUNCTIONS
+ ***/
+
+/*******************************************************************************
+ * FUNCTION:	    print_matrix
+ *
+ * DESCRIPTION:	    Pretty simple. Prints a gsl_matrix structure.
+ *
+ * ARGUMENTS:	    matrix: (gsl_matrix *) -- the matrix to print.
+ *
+ * RETURN:	    void.
+ *
+ * NOTES:	    none
+ ***/
+static void print_matrix(gsl_matrix * matrix)
+{
+  for (int i = 0; i < matrix->size1; i++) {
+    printf("[");
+    for (int j = 0; j < matrix->size2; j++) {
+      printf("%g, ", gsl_matrix_get(matrix, i, j));
+    }
+    printf("]\n");
+  }
 }
 
 /******************************************************************************/
