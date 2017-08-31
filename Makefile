@@ -54,8 +54,9 @@ LDLIBS= `pkg-config --libs gsl` \
 all: force src/main
 	@if [ `uname` = Darwin ]; then dsymutil src/main; fi
 	@mv src/main $(TOP)/main
-	@rsync -a src/main.dSYM $(TOP)/
-	@rm -rf `find $(TOP) -name *.o` src/main.dSYM
+	@if [ `uname` = Darwin ]; then rsync -a src/main.dSYM $(TOP)/; fi
+	@rm -rf `find $(TOP) -name *.o`
+	@if [ `uname` = Darwin ]; then rm -rf src/main.dSYM; fi
 
 src/main: $(OBJS)
 
