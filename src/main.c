@@ -50,7 +50,7 @@ int main(int argc, char * argv[]) {
   gsl_matrix * matrix = read_tuples_csv("data/12AX7-Data.csv", 5);
   print_matrix(matrix);
 
-  double init[5] = {5.0, 5.0, 5.0, 5.0, 5.0};
+  double init[5] = {1.0, 1.0, 1.0, 1.0, 1.0};
   fit_data_t * dat = malloc(sizeof(fit_data_t));
   dat->empirical_data = matrix;
   dat->initial_values = init;

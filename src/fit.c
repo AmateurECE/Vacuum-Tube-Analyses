@@ -144,7 +144,7 @@ void callback(const size_t iter,
 	      const gsl_multifit_nlinear_workspace * w)
 {
   gsl_vector * x = gsl_multifit_nlinear_position(w);
-  printf("iter %2zu: Y = %fEg + %fEp + %fEg^2 + %fEp^2 + %f\n",
+  printf("iter %2zu: Y = %2.4eEg + %2.4eEp + %2.4eEg^2 + %2.4eEp^2 + %2.4e\n",
 	 iter,
 	 gsl_vector_get(x, 0),
 	 gsl_vector_get(x, 1),
@@ -182,7 +182,7 @@ fit_data_t * fit_surface(fit_data_t * data, bool call)
   /* Initialize fdf structure */
   gsl_multifit_nlinear_fdf fdf = (gsl_multifit_nlinear_fdf){
     .f = surface_f,
-    .df = surface_df,
+    .df = NULL,
     .fvv = NULL,
     .n = data->empirical_data->size1,
     .p = data->empirical_data->size2,
