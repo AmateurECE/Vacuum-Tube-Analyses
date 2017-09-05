@@ -43,7 +43,7 @@
 /*******************************************************************************
  * FUNCTION:	    read_tuples_csv
  *
- * DESCRIPTION:	    Reads tuples in the form (\d+,\d+,...) from the file with
+ * DESCRIPTION:	    Reads tuples in the form \d+,\d+,... from the file with
  *		    the name <filename> of size <n>.
  *
  * ARGUMENTS:	    filename: (const char *) -- the name of the file to read.
@@ -54,42 +54,44 @@
  *
  * NOTES:	    none.
  ***/
-gsl_matrix * read_tuples_csv(const char * filename, size_t n)
+gsl_matrix * read_tuples_csv(const char * filename, size_t size)
 {
   FILE * file;
-  if ((file = fopen(filename, "r")) == NULL || n <= 0)
+  if ((file = fopen(filename, "r")) == NULL || size <= 0)
     return NULL;
 
   List * list = malloc(sizeof(List));
   list_init(list, free);
 
-  while (!feof(file)) {
-    double * arr = calloc(n, sizeof(double));
-    char *line = NULL, *scratch;
-    size_t n = 0;
-    if (getline(&line, &n, file) == -1) goto error_exit;
+  double * arr;
+  char * line = NULL;
+  size_t n = 0;
+  while (getline(&line, &n, file) != -1) {
+    if ((arr = calloc(size, sizeof(double))) == NULL) goto error_exit;
+    char * scratch;
     line = strtok_r(line, ",", &scratch);
 
     int i = 0;
     do {
-      sscanf(line, "%lf", &arr[i]);
+      int ret = sscanf(line, "%lf", &arr[i]);
+      if (ret <= 0) fprintf(stderr, "Something happened:\nline:\t%s", line);
       i++;
-    } while ((line = strtok_r(NULL, ",", &scratch)) != NULL && i < n);
+    } while ((line = strtok_r(NULL, ",", &scratch)) != NULL && i < size);
 
-    free(line);
-    if (list_insnxt(list, list_tail(list), arr) != 0) {
-      free(arr);
+    /* free(line); */
+    line = NULL;
+    if (list_insnxt(list, list_tail(list), arr) != 0)
       goto error_exit;
-    }
   }
   fclose(file);
+  file = NULL;
 
-  gsl_matrix * matrix = gsl_matrix_alloc(list_size(list), n);
+  gsl_matrix * matrix = gsl_matrix_alloc(list_size(list), size);
   int i = 0;
   while (list_size(list) > 0) {
     double * vector;
     list_remnxt(list, NULL, (void **)&vector);
-    for (int j = 0; j < n; j++) {
+    for (int j = 0; j < size; j++) {
       gsl_matrix_set(matrix, i, j, vector[j]);
     }
     i++;
@@ -101,8 +103,9 @@ gsl_matrix * read_tuples_csv(const char * filename, size_t n)
   return matrix;
 
  error_exit: {
-    fclose(file);
+    if (file != NULL) fclose(file);
     list_dest(list);
+    free(arr);
     free(list);
     return NULL;
   }
