@@ -186,7 +186,7 @@ fit_data_t * fit_surface(fit_data_t * data, bool call)
     .fvv = NULL,
     .n = data->empirical_data->size1,
     .p = data->empirical_data->size2,
-    .params = data->empirical_data
+    .params = data
   };
 
   /* Allocate the solver */
