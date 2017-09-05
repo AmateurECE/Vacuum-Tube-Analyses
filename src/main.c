@@ -47,17 +47,13 @@ static void print_matrix(gsl_matrix * matrix);
  ***/
 
 int main(int argc, char * argv[]) {
-  gsl_matrix * matrix;
-
-  matrix = read_tuples_csv("data/12AX7-Data.csv", 3);
+  gsl_matrix * matrix = read_tuples_csv("data/12AX7-Data.csv", 5);
   print_matrix(matrix);
 
   double init[5] = {5.0, 5.0, 5.0, 5.0, 5.0};
-
   fit_data_t * dat = malloc(sizeof(fit_data_t));
   dat->empirical_data = matrix;
   dat->initial_values = init;
-
   fit_surface(dat, true);
 }
 
@@ -79,9 +75,9 @@ int main(int argc, char * argv[]) {
 static void print_matrix(gsl_matrix * matrix)
 {
   for (int i = 0; i < matrix->size1; i++) {
-    printf("[");
+    printf("[ ");
     for (int j = 0; j < matrix->size2; j++) {
-      printf("%g, ", gsl_matrix_get(matrix, i, j));
+      printf("%g\t", gsl_matrix_get(matrix, i, j));
     }
     printf("]\n");
   }
