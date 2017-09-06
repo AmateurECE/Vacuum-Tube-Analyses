@@ -20,8 +20,11 @@
 <p>Directory Structure:</p>
 <code>
   src/ - C, Python, and Perl source files<br>
+
   gnuplot/ - GNUPlot scripts<br>
+
   data/ - Tube data<br>
+
   doc/ - LaTeX/HTML documentation<br>
 </code>
 <h2>Sources</h2>
