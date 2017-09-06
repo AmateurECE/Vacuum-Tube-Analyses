@@ -8,6 +8,6 @@ set zrange [-1:8]
 set title "Multiple Polynomial Regression of Triode Characteristics"
 set xlabel "Plate Voltage, Ep (V)"
 set ylabel "Grid Voltage, Eg (V)"
-set zlabel "Grid Current, Ig (mA)" rotate parallel
+set zlabel "Plate Current, Ip (mA)" rotate parallel
 splot '12AX7-Data.txt' using 1:2:3, f(x,y)
 pause -1
