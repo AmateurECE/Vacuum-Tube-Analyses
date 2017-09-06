@@ -18,15 +18,12 @@
   datasheet, and to provide frequency analyses of circuits, comparisons of
   different tubes, and so much more. Stay updated as this program grows.</p>
 <p>Directory Structure:</p>
-<code>
-  src/ - C, Python, and Perl source files<br>
-
-  gnuplot/ - GNUPlot scripts<br>
-
-  data/ - Tube data<br>
-
-  doc/ - LaTeX/HTML documentation<br>
-</code>
+<ul>
+  <li>src/ - C, Python, and Perl source files</li>
+  <li>gnuplot/ - GNUPlot scripts</li>
+  <li>data/ - Tube data</li>
+  <li>doc/ - LaTeX/HTML documentation</li>
+</ul>
 <h2>Sources</h2>
 <ul>
   <li>www.electronics-notes.com</li>
