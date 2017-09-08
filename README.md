@@ -24,6 +24,8 @@
   <li>data/ - Tube data</li>
   <li>doc/ - LaTeX/HTML documentation</li>
 </ul>
+<p>TODO: Add support for providing a filename. Add support for turning off
+	 callback in log. What else?</p>
 <h2>Sources</h2>
 <ul>
   <li>www.electronics-notes.com</li>
