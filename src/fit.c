@@ -56,6 +56,7 @@
   "set xlabel 'Plate Voltage, Ep (V)'; "				\
   "set ylabel 'Grid Voltage, Eg (V)'; "					\
   "set zlabel 'Plate Current, Ip (V)' rotate parallel; "		\
+  "set zrange [-1:8]; "							\
   "%s"									\
   "%s"
 
