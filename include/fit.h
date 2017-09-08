@@ -39,8 +39,13 @@
  * TYPE DEFINITIONS
  ***/
 
+typedef struct fit_param {
+  double value;
+  double error;
+} fit_param_t;
+
 typedef struct fit_data {
-  gsl_vector * coefficients;
+  fit_param_t * coefficients;
   double * initial_values;
   gsl_matrix * empirical_data;
 } fit_data_t;

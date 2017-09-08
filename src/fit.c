@@ -49,13 +49,13 @@
 
 #define COMMAND_PNG_OUTPUT			\
   "set terminal png; "				\
-  "set output '/mnt/home/etwardy/misc/surface.png'; "
+  "set output 'surface.png'; "
 
 #define COMMAND_SCRIPT							\
   "set title 'Multiple Polynomial Regression of Triode Characteristics'; " \
   "set xlabel 'Plate Voltage, Ep (V)'; "				\
   "set ylabel 'Grid Voltage, Eg (V)'; "					\
-  "set zlabel 'Plate Current, Ip (V)'; "				\
+  "set zlabel 'Plate Current, Ip (V)' rotate parallel; "		\
   "%s"									\
   "%s"
 
@@ -276,6 +276,19 @@ int fit_surface(fit_data_t * data, bool call, FILE * outfh)
   print_to_log(w, &fdf, info, status, covar, chisq0, chisq1,
 	       data->empirical_data->size1, data->empirical_data->size2);
 
+  /* Fill the struct with the data */
+  data->coefficients = calloc(5, sizeof(fit_param_t));
+  if (data->coefficients == NULL)
+    return 1;
+  fit_param_t * parr = data->coefficients;
+  double c = GSL_MAX_DBL(1, sqrt(chisq1 /
+				 (data->empirical_data->size1 -
+				  data->empirical_data->size2)));
+  for (int i = 0; i < 5; i++) {
+    parr[i].value = gsl_vector_get(w->x, i);
+    parr[i].error = c * sqrt(gsl_matrix_get(covar,i,i));
+  }
+
   gsl_multifit_nlinear_free(w);
   gsl_matrix_free(covar);
   
@@ -309,11 +322,17 @@ int plot(fit_data_t * data, bool png_output)
 
   /* Create the GNUPlot commands. */
   char *script = NULL, *fn = NULL, *plot = NULL, *total = NULL;
-  /* asprintf(&fn, COMMAND_FN, /\* Pass in determined values. *\/); */
+  fit_param_t * parr = data->coefficients;
+  asprintf(&fn, COMMAND_FN,
+	   parr[0].value,
+	   parr[1].value,
+	   parr[2].value,
+	   parr[3].value,
+	   parr[4].value);
   if (fn == NULL)
     goto error_exit;
 
-  asprintf(&plot, COMMAND_PLOT, tmpfn);
+   asprintf(&plot, COMMAND_PLOT, tmpfn);
   if (plot == NULL)
     goto error_exit;
 
