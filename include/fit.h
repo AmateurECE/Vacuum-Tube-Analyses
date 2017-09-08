@@ -48,7 +48,9 @@ typedef struct fit_data {
  ***/
 
 extern int surface_f(const gsl_vector * x, void * data, gsl_vector * f);
-extern int surface_df(const gsl_vector * x, void * data, gsl_matrix * J);
+/* This function is currently still in development. */
+/* extern int surface_df(const gsl_vector * x, void * data, gsl_matrix * J); */
 extern fit_data_t * fit_surface(fit_data_t * data, bool callback);
+extern int plot(fit_data_t * data);
 
 /******************************************************************************/
