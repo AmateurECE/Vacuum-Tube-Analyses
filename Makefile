@@ -30,7 +30,8 @@ TOP:=$(shell pwd)
 OBJS:= main.c \
 	linkedlist.c \
 	fit.c \
-	util.c
+	util.c \
+	gnuplot_i/gnuplot_i.c
 
 OBJS:=$(addprefix src/,$(OBJS))
 OBJS:=$(patsubst %.c,%.o,$(OBJS))
