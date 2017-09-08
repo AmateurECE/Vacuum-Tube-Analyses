@@ -37,6 +37,7 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_multifit_nlinear.h>
+#include <gsl/gsl_blas.h>
 #include <unistd.h>
 
 #include "gnuplot_i/gnuplot_i.h"
@@ -48,13 +49,13 @@
 
 #define COMMAND_PNG_OUTPUT			\
   "set terminal png; "				\
-  "set output \"surface.png\"; "
+  "set output '/mnt/home/etwardy/misc/surface.png'; "
 
 #define COMMAND_SCRIPT							\
-  "set title \"Multiple Polynomial Regression of Triode Characteristics\"; " \
-  "set xlabel \"Plate Voltage, Ep (V)\"; "				\
-  "set ylabel \"Grid Voltage, Eg (V)\"; "				\
-  "set zlabel \"Plate Current, Ip (V)\"; "				\
+  "set title 'Multiple Polynomial Regression of Triode Characteristics'; " \
+  "set xlabel 'Plate Voltage, Ep (V)'; "				\
+  "set ylabel 'Grid Voltage, Eg (V)'; "					\
+  "set zlabel 'Plate Current, Ip (V)'; "				\
   "%s"									\
   "%s"
 
@@ -65,9 +66,24 @@
   "splot '%s' using 1:2:3, f(x,y); "
 
 /*******************************************************************************
+ * GLOBAL VARIABLES
+ ***/
+
+static FILE * surface_log;
+
+/*******************************************************************************
  * STATIC FUNCTION PROTOTYPES
  ***/
 
+static int print_to_log(gsl_multifit_nlinear_workspace * w,
+			gsl_multifit_nlinear_fdf * fdf,
+			int info,
+			int status,
+			gsl_matrix * covar,
+			double chisq0,
+			double chisq1,
+			size_t n,
+			size_t p);
 static int tmp_write_data(fit_data_t * fit_data, FILE * tmpfd);
 
 /*******************************************************************************
@@ -165,26 +181,29 @@ int surface_df(const gsl_vector * x, void * data, gsl_matrix * J)
 /*******************************************************************************
  * FUNCTION:	    callback
  *
- * DESCRIPTION:	    
+ * DESCRIPTION:	    Callback function executed on every iteration of the solver.
  *
- * ARGUMENTS:	    
+ * ARGUMENTS:	    iter: (const size_t) -- number of iterations thus far.
+ *		    params: (void *) -- parameters passed from the caller.
+ *		    w: (const gsl_multifit_nlinear_workspace *) -- workspace.
  *
- * RETURN:	    
+ * RETURN:	    void.
  *
- * NOTES:	    
+ * NOTES:	    none.
  ***/
 void callback(const size_t iter,
 	      void * params,
 	      const gsl_multifit_nlinear_workspace * w)
 {
   gsl_vector * x = gsl_multifit_nlinear_position(w);
-  printf("iter %2zu: Y = %2.4eEg + %2.4eEp + %2.4eEg^2 + %2.4eEp^2 + %2.4e\n",
-	 iter,
-	 gsl_vector_get(x, 0),
-	 gsl_vector_get(x, 1),
-	 gsl_vector_get(x, 2),
-	 gsl_vector_get(x, 3),
-	 gsl_vector_get(x, 4));
+  fprintf(surface_log,
+	  "iter %2zu: Y = %2.4eEg + %2.4eEp + %2.4eEg^2 + %2.4eEp^2 + %2.4e\n",
+	  iter,
+	  gsl_vector_get(x, 0),
+	  gsl_vector_get(x, 1),
+	  gsl_vector_get(x, 2),
+	  gsl_vector_get(x, 3),
+	  gsl_vector_get(x, 4));
 }
 
 /*******************************************************************************
@@ -195,13 +214,14 @@ void callback(const size_t iter,
  *
  * ARGUMENTS:	    data: (fit_data_t *) -- struct containing the data to fit.
  *
- * RETURN:	    (fit_data_t *) -- pointer to the same struct that is passed,
- *		    sets the relevant fields.
+ * RETURN:	    int --  0 on success, -1 otherwise.
  *
  * NOTES:	    none.
  ***/
-fit_data_t * fit_surface(fit_data_t * data, bool call)
+int fit_surface(fit_data_t * data, bool call, FILE * outfh)
 {
+  surface_log = outfh ? outfh : stdout; /* Setup global file descriptor. */
+
   /* Define constants for fitting */
   const double xtol = 1e-8; /* Step tolerance */
   const double gtol = 1e-8; /* Gradient tolerance */
@@ -233,13 +253,33 @@ fit_data_t * fit_surface(fit_data_t * data, bool call)
   /* Initialize the solver */
   gsl_multifit_nlinear_winit(&view.vector, NULL, &fdf, w);
 
+  /* Compute the initial cost. */
+  gsl_vector * res = gsl_multifit_nlinear_residual(w);
+  double chisq0;
+  gsl_blas_ddot(res, res, &chisq0);
+
+  /* Solve the system. */
   int info, status;
   status = gsl_multifit_nlinear_driver(20, xtol, gtol, ftol,
 				       callback, NULL, &info, w);
 
-  printf("status = %s\ncallback = %d\n", gsl_strerror(status), (int)call);
+  /* Compute covariance of best fit parameters. */
+  gsl_matrix * Jacobian = gsl_multifit_nlinear_jac(w);
+  gsl_matrix * covar = gsl_matrix_alloc(fdf.p, fdf.p);
+  gsl_multifit_nlinear_covar(Jacobian, 0.0, covar);
+
+  /* Compute final cost. */
+  double chisq1;
+  gsl_blas_ddot(res, res, &chisq1);
+
+  /* Print the output. */
+  print_to_log(w, &fdf, info, status, covar, chisq0, chisq1,
+	       data->empirical_data->size1, data->empirical_data->size2);
+
+  gsl_multifit_nlinear_free(w);
+  gsl_matrix_free(covar);
   
-  return NULL;
+  return 0;
 }
 
 /*******************************************************************************
@@ -261,27 +301,28 @@ int plot(fit_data_t * data, bool png_output)
 {
   /* Create the temp file. */
   char tmpfn[] = "/tmp/mpr-tubeXXXXXX";
-  FILE * tmpfd = mkstemp(tmpfn);
+  int tmpfdnum = mkstemp((char *)tmpfn);
+  FILE * tmpfd = fdopen(tmpfdnum, "w");
   if (tmpfd == NULL) return -1;
   tmp_write_data(data, tmpfd);
   fclose(tmpfd);
 
   /* Create the GNUPlot commands. */
   char *script = NULL, *fn = NULL, *plot = NULL, *total = NULL;
-  asprintf(fn, COMMAND_FN, tmpfn);
+  /* asprintf(&fn, COMMAND_FN, /\* Pass in determined values. *\/); */
   if (fn == NULL)
     goto error_exit;
 
-  asprintf(plot, COMMAND_PLOT, tmpfn);
+  asprintf(&plot, COMMAND_PLOT, tmpfn);
   if (plot == NULL)
     goto error_exit;
 
-  asprintf(script, COMMAND_SCRIPT, fn, plot);
+  asprintf(&script, COMMAND_SCRIPT, fn, plot);
   if (script == NULL)
     goto error_exit;
 
-  asprintf(total, "%s%s",
-	   png ? COMMAND_PNG_OUTPUT : "",
+  asprintf(&total, "%s%s",
+	   png_output ? COMMAND_PNG_OUTPUT : "",
 	   script);
   if (total == NULL)
     goto error_exit;
@@ -313,6 +354,63 @@ int plot(fit_data_t * data, bool png_output)
  ***/
 
 /*******************************************************************************
+ * FUNCTION:	    print_to_log
+ *
+ * DESCRIPTION:	    Print the results to the output file.
+ *
+ * ARGUMENTS:	    w: (gsl_multifit_nlinear_workspace *) -- resultant data.
+ *		    fdf: (gsl_multifit_nlinear_fdf *) -- resultant data.
+ *		    info: (int) -- resultant data.
+ *		    status: (int) -- resultant data.
+ *		    covar: (gsl_matrix *) -- resultant data.
+ *		    chisq0: (double) -- resultant data.
+ *		    chisq1: (double) -- resultant data.
+ *
+ * RETURN:	    0
+ *
+ * NOTES:	    none.
+ ***/
+static int print_to_log(gsl_multifit_nlinear_workspace * w,
+			gsl_multifit_nlinear_fdf * fdf,
+			int info,
+			int status,
+			gsl_matrix * covar,
+			double chisq0,
+			double chisq1,
+			size_t n,
+			size_t p)
+{
+  fprintf(surface_log, "Summary from method: '%s'\n",
+	  gsl_multifit_nlinear_trs_name(w));
+  fprintf(surface_log, "Number of iterations: %zu\n",
+	  gsl_multifit_nlinear_niter(w));
+  fprintf(surface_log, "Function evaluations: %zu\n", fdf->nevalf);
+  fprintf(surface_log, "Jacobian evaluations: %zu\n", fdf->nevaldf);
+  fprintf(surface_log, "Reason for stopping: %s\n",
+	  (info == 1) ? "small step size" : "small gradient");
+  fprintf(surface_log, "Initial |f(x)| = %f\n", sqrt(chisq0));
+  fprintf(surface_log, "Final   |f(x)| = %f\n", sqrt(chisq1));
+
+  double dof = n - p;
+  double c = GSL_MAX_DBL(1, sqrt(chisq1 / dof));
+  fprintf(surface_log, "(Chi^2)/dof = %g\n", chisq1 / dof);
+
+  fprintf (surface_log, "B_0 = %.5f +/- %.5f\n", gsl_vector_get(w->x, 0),
+	   c * sqrt(gsl_matrix_get(covar,0,0)));
+  fprintf (surface_log, "B_1 = %.5f +/- %.5f\n", gsl_vector_get(w->x, 1),
+	   c * sqrt(gsl_matrix_get(covar,1,1)));
+  fprintf (surface_log, "B_2 = %.5f +/- %.5f\n", gsl_vector_get(w->x, 2),
+	   c * sqrt(gsl_matrix_get(covar,2,2)));
+  fprintf (surface_log, "B_3 = %.5f +/- %.5f\n", gsl_vector_get(w->x, 3),
+	   c * sqrt(gsl_matrix_get(covar,3,3)));
+  fprintf (surface_log, "B_4 = %.5f +/- %.5f\n", gsl_vector_get(w->x, 4),
+	   c * sqrt(gsl_matrix_get(covar,4,4)));
+  
+  fprintf (surface_log, "status = %s\n", gsl_strerror (status));
+  return 0;
+}
+
+/*******************************************************************************
  * FUNCTION:	    tmp_write_data
  *
  * DESCRIPTION:	    Write the empirical data in fit_data out to the open file.
@@ -327,7 +425,7 @@ int plot(fit_data_t * data, bool png_output)
 static int tmp_write_data(fit_data_t * fit_data, FILE * tmpfd)
 {
   char * format = "%2.4g %2.4g %2.4g\n";
-  gsl_matrix * data = fit_data->empirical->data;
+  gsl_matrix * data = fit_data->empirical_data;
 
   for (int i = 0; i < data->size2; i++) {
     fprintf(tmpfd, format,
