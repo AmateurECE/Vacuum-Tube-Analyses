@@ -27,13 +27,14 @@
                                 Includes
  ---------------------------------------------------------------------------*/
 
-#include "gnuplot_i.h"
+#include "gnuplot_i/gnuplot_i.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <unistd.h>
 
 #ifdef WIN32
 #include <io.h>
