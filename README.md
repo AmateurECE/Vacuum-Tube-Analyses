@@ -25,7 +25,8 @@
   <li>doc/ - LaTeX/HTML documentation</li>
 </ul>
 <p>TODO: Add support for providing a filename. Add support for turning off
-	 callback in log. What else?</p>
+	 callback in log. Add support for providing three params in csv.
+	 Add support for comments in .csv</p>
 <h2>Sources</h2>
 <ul>
   <li>www.electronics-notes.com</li>
