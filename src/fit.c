@@ -61,7 +61,7 @@
   "%s"
 
 #define COMMAND_FN				\
-  "f(x,y) = %2.4g*x + %2.4g*y + %2.4g*x**2 + %2.4g*y**2 + %2.4g; "
+  "f(x,y) = %2.4g*y + %2.4g*x + %2.4g*y**2 + %2.4g*x**2 + %2.4g; "
 
 #define COMMAND_PLOT				\
   "splot '%s' using 1:2:3, f(x,y); "
@@ -116,9 +116,9 @@ int surface_f(const gsl_vector * x, void * data, gsl_vector * f)
 {
   gsl_matrix * values = ((fit_data_t *)data)->empirical_data;
   size_t n = values->size1;
-  gsl_vector_view Ig = gsl_matrix_column(values, 0);
+  gsl_vector_view Ig = gsl_matrix_column(values, 2);
   gsl_vector_view Eg = gsl_matrix_column(values, 1);
-  gsl_vector_view Ep = gsl_matrix_column(values, 2);
+  gsl_vector_view Ep = gsl_matrix_column(values, 0);
 
   double b0 = gsl_vector_get(x, 0);
   double b1 = gsl_vector_get(x, 1);
@@ -333,7 +333,7 @@ int plot(fit_data_t * data, bool png_output)
   if (fn == NULL)
     goto error_exit;
 
-   asprintf(&plot, COMMAND_PLOT, tmpfn);
+  asprintf(&plot, COMMAND_PLOT, tmpfn);
   if (plot == NULL)
     goto error_exit;
 
@@ -447,7 +447,7 @@ static int tmp_write_data(fit_data_t * fit_data, FILE * tmpfd)
   char * format = "%2.4g %2.4g %2.4g\n";
   gsl_matrix * data = fit_data->empirical_data;
 
-  for (int i = 0; i < data->size2; i++) {
+  for (int i = 0; i < data->size1; i++) {
     fprintf(tmpfd, format,
 	    gsl_matrix_get(data, i, 0),
 	    gsl_matrix_get(data, i, 1),
