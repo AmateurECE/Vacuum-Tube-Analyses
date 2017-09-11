@@ -5,8 +5,8 @@
   make a statement (more on that later).</p>
 <p>This repository uses the GSL's implementation of the Levenberg-Marquardt
   algorithm to perform a multiple polynomial regression of empirical data
-  measured from the pins of a 12AX7 Triode. The tool finds a surface that best
-  matches the data given, of the form:</p>
+  measured from the pins of a 12AX7 Triode under load. The tool finds a surface
+  that best matches the data given, of the form:</p>
 <img src="doc/eqn.png" alt="Function">
 <p>Where the vector Beta is the vector of regression coefficients, Eg is the
   grid voltage, Ep is the plate voltage, and Ip is the plate current.</p>
@@ -17,6 +17,8 @@
   a few inputs provided by the user. It will be used to gauge the accuracy of the
   datasheet, and to provide frequency analyses of circuits, comparisons of
   different tubes, and so much more. Stay updated as this program grows.</p>
+<p>Here is an example of the kind of output that this function can generate:</p>
+<img src="doc/surface.png" alt="Surface">
 <p>Directory Structure:</p>
 <ul>
   <li>src/ - C, Python, and Perl source files</li>
