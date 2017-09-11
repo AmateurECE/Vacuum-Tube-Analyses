@@ -9,7 +9,7 @@
   that best matches the data given, of the form:</p>
 <img src="doc/eqn.png" alt="Function">
 <p>Where the vector Beta is the vector of regression coefficients, Eg is the
-  grid voltage, Ep is the plate voltage, and Ip is the plate current.</p>
+  grid voltage, Ep is the plate voltage, and Ig is the grid current.</p>
 <p><em>But this is only the start.</em> In the future, this program will do
   so much more. It will generate statistical data providing information about
   the fit. It will provide a simple interface to compute the function, and its
@@ -26,9 +26,9 @@
   <li>data/ - Tube data</li>
   <li>doc/ - LaTeX/HTML documentation</li>
 </ul>
-<p>TODO: Add support for providing a filename. Add support for turning off
-	 callback in log. Add support for providing three params in csv.
-	 Add support for comments in .csv</p>
+#<p>TODO: Add support for providing a filename. Add support for turning off
+#	 callback in log. Add support for providing three params in csv.
+#	 Add support for comments in .csv</p>
 <h2>Sources</h2>
 <ul>
   <li>www.electronics-notes.com</li>
