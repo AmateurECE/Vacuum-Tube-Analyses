@@ -37,6 +37,12 @@
 #include "util.h"
 
 /*******************************************************************************
+ * STATIC FUNCTION PROTOTYPES
+ ***/
+
+static size_t remove_comments(char ** string, size_t size);
+
+/*******************************************************************************
  * API FUNCTIONS
  ***/
 
@@ -67,6 +73,8 @@ gsl_matrix * read_tuples_csv(const char * filename, size_t size)
   char * line = NULL;
   size_t n = 0;
   while (getline(&line, &n, file) != -1) {
+
+    if (remove_comments((char **)&line, n) <= 0) continue;
     if ((arr = calloc(size, sizeof(double))) == NULL) goto error_exit;
     char * scratch;
     line = strtok_r(line, ",", &scratch);
@@ -78,7 +86,6 @@ gsl_matrix * read_tuples_csv(const char * filename, size_t size)
       i++;
     } while ((line = strtok_r(NULL, ",", &scratch)) != NULL && i < size);
 
-    /* free(line); */
     line = NULL;
     if (list_insnxt(list, list_tail(list), arr) != 0)
       goto error_exit;
@@ -140,5 +147,33 @@ gsl_matrix * read_tuples_xml(const char * filename, size_t n) {
 /*******************************************************************************
  * STATIC FUNCTIONS
  ***/
+
+/*******************************************************************************
+ * FUNCTION:	    remove_comments
+ *
+ * DESCRIPTION:	    Find and remove any '#' delimited comments in the .csv file.
+ *		    Removes them by truncating the string with a '\0' char.
+ *
+ * ARGUMENTS:	    string: (char **) -- the string to gnaw.
+ *		    size: (size_t) -- the size of the string.
+ *
+ * RETURN:	    size_t -- the size of the new string. Returns -1 if there is
+ *		    an error, 0 if '#' is the first character.
+ *
+ * NOTES:	    Does not manage storage.
+ ***/
+static size_t remove_comments(char ** string, size_t size)
+{
+  if (string == NULL || size == 0)
+    return -1;
+  if (*string == NULL)
+    return -1;
+
+  char * new = memchr(*string, '#', size);
+  if (new == NULL) return size;
+
+  size_t newsize = (size_t)(new - *string);
+  return newsize;
+}
 
 /******************************************************************************/
