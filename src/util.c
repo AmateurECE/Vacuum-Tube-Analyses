@@ -74,22 +74,40 @@ gsl_matrix * read_tuples_csv(const char * filename, size_t size)
   size_t n = 0;
   while (getline(&line, &n, file) != -1) {
 
-    if (remove_comments((char **)&line, n) <= 0) continue;
+    if (remove_comments((char **)&line, n) <= 0) goto error_continue;
     if ((arr = calloc(size, sizeof(double))) == NULL) goto error_exit;
-    char * scratch;
-    line = strtok_r(line, ",", &scratch);
+    char * scratch, *hack = line;
+    hack = strtok_r(hack, ",", &scratch);
+    if (hack == NULL) goto error_exit;
 
     int i = 0;
     do {
-      int ret = sscanf(line, "%lf", &arr[i]);
-      if (ret <= 0) fprintf(stderr, "Something happened:\nline:\t%s", line);
+      int ret = sscanf(hack, "%lf", &arr[i]);
+      if (ret <= 0) {
+	free(arr);
+	arr = NULL;
+	goto error_continue;
+      }
       i++;
-    } while ((line = strtok_r(NULL, ",", &scratch)) != NULL && i < size);
+    } while ((hack = strtok_r(NULL, ",", &scratch)) != NULL && i < size);
 
-    line = NULL;
     if (list_insnxt(list, list_tail(list), arr) != 0)
       goto error_exit;
+
+  error_continue:
+    if (line != NULL) {
+      free(line);
+      line = NULL; 
+    }
   }
+
+  /* If the .csv file contains and empty line at the end, the while() {} will
+   * break on this line and line will never be freed (mem leak). */
+  if (line != NULL) {
+    free(line);
+    line = NULL;
+  }
+
   fclose(file);
   file = NULL;
 
@@ -101,6 +119,7 @@ gsl_matrix * read_tuples_csv(const char * filename, size_t size)
     for (int j = 0; j < size; j++) {
       gsl_matrix_set(matrix, i, j, vector[j]);
     }
+    free(vector); /* It's not done by list_remnxt. */
     i++;
   }
 
