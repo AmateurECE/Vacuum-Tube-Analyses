@@ -47,7 +47,7 @@ static void print_matrix(gsl_matrix * matrix);
  ***/
 
 int main(int argc, char * argv[]) {
-  gsl_matrix * matrix = read_tuples_csv("data/12AX7-Data.csv", 5);
+  gsl_matrix * matrix = read_tuples_csv("data/12AX7-Data.csv", 3);
   print_matrix(matrix);
 
   double init[5] = {1.0, 1.0, 1.0, 1.0, 1.0};
@@ -56,6 +56,8 @@ int main(int argc, char * argv[]) {
   dat->initial_values = init;
   fit_surface(dat, true, NULL);
   plot(dat, true);
+
+  gsl_matrix_free(matrix);
 }
 
 /*******************************************************************************
