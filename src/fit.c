@@ -227,8 +227,8 @@ int fit_surface(fit_data_t * data, bool call, FILE * outfh)
   const double xtol = 1e-8; /* Step tolerance */
   const double gtol = 1e-8; /* Gradient tolerance */
   const double ftol = 0.0;   /* ??? */
-  gsl_vector_view view = gsl_vector_view_array(data->initial_values,
-					       data->empirical_data->size2);
+  size_t numcoef = 5; /* The size of the coefficient vector. */
+  gsl_vector_view view = gsl_vector_view_array(data->initial_values, numcoef);
 
   /* Use the default parameters */
   gsl_multifit_nlinear_parameters params =
@@ -240,7 +240,7 @@ int fit_surface(fit_data_t * data, bool call, FILE * outfh)
     .df = NULL, /* Use the finite difference Jacobian. */
     .fvv = NULL,
     .n = data->empirical_data->size1,
-    .p = data->empirical_data->size2,
+    .p = numcoef,
     .params = data
   };
 
@@ -249,7 +249,7 @@ int fit_surface(fit_data_t * data, bool call, FILE * outfh)
     gsl_multifit_nlinear_alloc(gsl_multifit_nlinear_trust,
 			       &params,
 			       data->empirical_data->size1,
-			       data->empirical_data->size2);
+			       fdf.p);
 
   /* Initialize the solver */
   gsl_multifit_nlinear_winit(&view.vector, NULL, &fdf, w);
@@ -262,7 +262,8 @@ int fit_surface(fit_data_t * data, bool call, FILE * outfh)
   /* Solve the system. */
   int info, status;
   status = gsl_multifit_nlinear_driver(20, xtol, gtol, ftol,
-				       callback, NULL, &info, w);
+				       call ? callback : NULL,
+				       NULL, &info, w);
 
   /* Compute covariance of best fit parameters. */
   gsl_matrix * Jacobian = gsl_multifit_nlinear_jac(w);
@@ -275,16 +276,14 @@ int fit_surface(fit_data_t * data, bool call, FILE * outfh)
 
   /* Print the output. */
   print_to_log(w, &fdf, info, status, covar, chisq0, chisq1,
-	       data->empirical_data->size1, data->empirical_data->size2);
+	       data->empirical_data->size1, fdf.p);
 
   /* Fill the struct with the data */
   data->coefficients = calloc(5, sizeof(fit_param_t));
   if (data->coefficients == NULL)
     return 1;
   fit_param_t * parr = data->coefficients;
-  double c = GSL_MAX_DBL(1, sqrt(chisq1 /
-				 (data->empirical_data->size1 -
-				  data->empirical_data->size2)));
+  double c = GSL_MAX_DBL(1, sqrt(chisq1 / (fdf.n - fdf.p)));
   for (int i = 0; i < 5; i++) {
     parr[i].value = gsl_vector_get(w->x, i);
     parr[i].error = c * sqrt(gsl_matrix_get(covar,i,i));

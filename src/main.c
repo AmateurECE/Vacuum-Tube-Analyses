@@ -40,7 +40,7 @@
  * STATIC FUNCTION PROTOTYPES
  ***/
 
-static void print_matrix(gsl_matrix * matrix);
+static void print_matrix(gsl_matrix * matrix, FILE * log);
 
 /*******************************************************************************
  * MAIN
@@ -48,14 +48,16 @@ static void print_matrix(gsl_matrix * matrix);
 
 int main(int argc, char * argv[]) {
   gsl_matrix * matrix = read_tuples_csv("data/12AX7-Data.csv", 3);
-  print_matrix(matrix);
+  FILE * fitlog = fopen("test.log", "w");
+  print_matrix(matrix, fitlog);
 
   double init[5] = {1.0, 1.0, 1.0, 1.0, 1.0};
   fit_data_t * dat = malloc(sizeof(fit_data_t));
   dat->empirical_data = matrix;
   dat->initial_values = init;
-  fit_surface(dat, true, NULL);
+  fit_surface(dat, true, fitlog);
   plot(dat, true);
+  fclose(fitlog);
 
   gsl_matrix_free(matrix);
 }
@@ -75,14 +77,14 @@ int main(int argc, char * argv[]) {
  *
  * NOTES:	    none
  ***/
-static void print_matrix(gsl_matrix * matrix)
+static void print_matrix(gsl_matrix * matrix, FILE * log)
 {
   for (int i = 0; i < matrix->size1; i++) {
-    printf("[ ");
+    fprintf(log, "[ ");
     for (int j = 0; j < matrix->size2; j++) {
-      printf("%g\t", gsl_matrix_get(matrix, i, j));
+      fprintf(log, "%g\t", gsl_matrix_get(matrix, i, j));
     }
-    printf("]\n");
+    fprintf(log, "]\n");
   }
 }
 
